@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <h2>{{title}}</h2>
+      <input
+        type="text"
+        v-model="title"
+        @keydown.enter="addTodo" />
+      <ul>
+        <li v-for="todo in todos">
+          <input
+            type="checkbox"
+            v-model="todo.done" />
+          <span :class="{done:todo.done}">{{todo.title}}</span>
+        </li>
+      </ul>
+      全选
+      <input
+        type="checkbox"
+        v-model="allDone" />
+      <div>{{active}} / {{all}}</div>
+      <button
+        v-if="active<all"
+        @click="clear">
+        清理
+      </button>
+    </div>
+  </body>
+  <script src="https://open.alrcly.com/vue.global.js"></script>
+  <script>
+    const App = {
+      data() {
+        return {
+          title: '',
+          todos: [
+            { title: '吃饭', done: false },
+            { title: '睡觉', done: true },
+          ],
+        };
+      },
+      methods: {
+        addTodo() {
+          // 添加一个新的条目
+          this.todos.push({ title: this.title, done: false });
+          this.title = '';
+        },
+        clear() {
+          // 清理已经完成的条目
+          this.todos = this.todos.filter((v) => !v.done);
+        },
+      },
+      computed: {
+        active() {
+          // 没有被划掉的条目
+          return this.todos.filter((v) => !v.done).length;
+        },
+        all() {
+          // 所有的条目
+          return this.todos.length;
+        },
+        allDone: {
+          // 全选/取消全选
+          get: function () {
+            return this.active === 0;
+          },
+          set: function (val) {
+            this.todos.forEach((todo) => {
+              todo.done = val;
+            });
+          },
+        },
+      },
+    };
+    // 启动应用
+    Vue.createApp(App).mount('#app');
+  </script>
+</html>
+
+<style>
+  .done {
+    color: gray;
+    text-decoration: line-through;
+  }
+</style>
